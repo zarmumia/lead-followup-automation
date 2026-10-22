@@ -1,0 +1,10 @@
+id,name,phone,source,owner,status,created_at,last_contact_at,callback_at,reminders_sent
+L-1001,Dana Levi,050-1112233,website,,new,2026-10-20T08:15:00,,,0
+L-1002,Avi Cohen,052-2223344,partner,Rep A,new,2026-10-20T07:00:00,,,0
+L-1003,Noa Mizrahi,054-3334455,past client,Rep B,callback,2026-10-14T10:00:00,2026-10-18T11:00:00,2026-10-20T10:00:00,0
+L-1004,Yossi Peretz,053-4445566,website,Rep A,callback,2026-10-15T09:30:00,2026-10-17T12:00:00,2026-10-18T09:00:00,0
+L-1005,Michal Biton,050-5556677,partner,Rep C,contacted,2026-10-10T14:00:00,2026-10-15T16:00:00,,0
+L-1006,Eli Friedman,052-6667788,website,Rep B,waiting_docs,2026-10-01T09:00:00,2026-10-12T09:00:00,,1
+L-1007,Ruth Azulay,054-7778899,inquiry,Rep C,waiting_docs,2026-09-20T09:00:00,2026-10-05T09:00:00,,3
+L-1008,Tom Shalev,053-8889900,website,Rep A,signed,2026-10-01T09:00:00,2026-10-19T09:00:00,,0
+L-1009,Lior Katz,050-9990011,partner,Rep B,contacted,2026-10-19T13:00:00,2026-10-19T15:00:00,,0
