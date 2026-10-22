@@ -1,0 +1,10 @@
+[project]
+name = "lead-followup-automation"
+version = "0.1.0"
+description = "Daily follow-up rules for CRM leads: call lists, manager digest, client reminders."
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Fanny Rabinovitch" }]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
