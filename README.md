@@ -2,6 +2,9 @@
 
 **Make sure no lead falls through the cracks.**
 
+> **About this repo:** a working demo from the [Zarmumia](https://zarmumia.co.il) portfolio. It shows the approach, not a finished product: rules a business owner can read, privacy first, and building on the tools a business already has. In client work it is adapted to the specific CRM and processes.
+
+
 Small service businesses lose more money to slow follow-up than to bad marketing: a callback is promised and never made, a new inquiry waits a day for a first call, a client is "still missing two documents" for weeks. This tool reads a CRM export and turns it into a clear plan for today.
 
 ## What it does
