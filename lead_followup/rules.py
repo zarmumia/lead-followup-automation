@@ -72,8 +72,21 @@ class Action:
         return self.lead.owner or "unassigned"
 
 
-def evaluate(lead: Lead, now: datetime, cfg: Config = Config()) -> list[Action]:
-    """Return every action this lead needs at `now`. Empty list = all good."""
+def _require_aware(name: str, value: datetime | None) -> None:
+    if value is not None and value.tzinfo is None:
+        raise ValueError(f"{name} must be timezone-aware (got naive {value.isoformat()})")
+
+
+def evaluate(lead: Lead, now: datetime, cfg: Config | None = None) -> list[Action]:
+    """Return every action this lead needs at `now`. Empty list = all good.
+
+    All datetimes must be timezone-aware, so leads exported from a CRM in one
+    timezone are never compared against a clock in another.
+    """
+    cfg = cfg or Config()
+    _require_aware("now", now)
+    for field_name in ("created_at", "last_contact_at", "callback_at"):
+        _require_aware(f"lead {lead.id}: {field_name}", getattr(lead, field_name))
     if lead.status not in OPEN_STATUSES:
         return []
 
@@ -109,6 +122,7 @@ def evaluate(lead: Lead, now: datetime, cfg: Config = Config()) -> list[Action]:
     return actions
 
 
-def evaluate_all(leads: list[Lead], now: datetime, cfg: Config = Config()) -> list[Action]:
+def evaluate_all(leads: list[Lead], now: datetime, cfg: Config | None = None) -> list[Action]:
+    cfg = cfg or Config()
     actions = [a for lead in leads for a in evaluate(lead, now, cfg)]
     return sorted(actions, key=lambda a: (a.priority, a.lead.created_at))

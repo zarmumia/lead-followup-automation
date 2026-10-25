@@ -3,6 +3,8 @@ and client reminder texts. Delivery is pluggable (console, webhook)."""
 from __future__ import annotations
 
 import json
+import time
+import urllib.error
 import urllib.request
 from collections import defaultdict
 
@@ -36,7 +38,7 @@ def manager_digest(actions: list[Action]) -> str:
     for a in flagged:
         counts[a.reason.value] += 1
     lines = [f"{n} × {reason}" for reason, n in sorted(counts.items(), key=lambda x: -x[1])]
-    return "Needs your attention today:\n" + "\n".join(f"  • {l}" for l in lines)
+    return "Needs your attention today:\n" + "\n".join(f"  • {line}" for line in lines)
 
 
 def client_messages(actions: list[Action]) -> list[dict]:
@@ -51,10 +53,27 @@ def client_messages(actions: list[Action]) -> list[dict]:
     return out
 
 
-def post_webhook(url: str, payload: dict) -> int:
-    """Send to any automation tool that accepts a webhook (Make, Zapier, n8n, a CRM)."""
-    req = urllib.request.Request(
-        url, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}
-    )
-    with urllib.request.urlopen(req, timeout=10) as r:
-        return r.status
+RETRYABLE_STATUS = {429, 500, 502, 503, 504}
+
+
+def post_webhook(url: str, payload: dict, retries: int = 3, backoff: float = 1.0,
+                 sleep=time.sleep) -> int:
+    """Send to any automation tool that accepts a webhook (Make, Zapier, n8n, a CRM).
+
+    Transient failures (network errors, 429, 5xx) are retried with exponential
+    backoff; anything else, or running out of retries, raises.
+    """
+    data = json.dumps(payload, ensure_ascii=False).encode()
+    for attempt in range(retries + 1):
+        req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=10) as r:
+                return r.status
+        except urllib.error.HTTPError as e:
+            if e.code not in RETRYABLE_STATUS or attempt == retries:
+                raise
+        except urllib.error.URLError:
+            if attempt == retries:
+                raise
+        sleep(backoff * 2 ** attempt)
+    raise RuntimeError("unreachable")
